@@ -21,29 +21,30 @@
     name: certbot
     state: present
 
-# - name: Generate certificate
-#   become: yes
-#   shell: "certbot certonly --standalone --email {{ ssl_email }} -d {{ web_site_name }}"
-# - name: Automating renewal
-#   # for test
-#   # shell: certbot renew --dry-run
-#   shell: certbot renew 
+  # 下面命令只能在生产环境执行
+  # See also: https://www.linuxbabe.com/ubuntu/install-nextcloud-11-ubuntu-16-04-nginx-config
+- name: Generate certificate
+  become: yes
+  shell: "certbot certonly --standalone -n --agree-tos --email {{ ssl_email }} -d {{ web_site_name }}"
 
-# - name: Configure nginx available sites
-#   become: yes
-#   template:
-#     src: nextcloud.example.com.http.j2
-#     dest: "/etc/nginx/sites-available/{{ web_site_name }}"
-#     owner: root
-#     group: root
-#     mode: "u=rw,g=r,o=r"
-#     backup: yes
+- name: Automating renewal
+  shell: certbot renew 
 
-# - name: Link nginx enabled sites
-#   become: yes
-#   file:
-#     src: "/etc/nginx/sites-available/{{ web_site_name }}"
-#     dest: "/etc/nginx/sites-enabled/{{ web_site_name }}"
-#     state: link
-#   notify: 
-#   - Start the Nginx service
+- name: Configure nginx available sites
+  become: yes
+  template:
+    src: nextcloud.example.com.http.j2
+    dest: "/etc/nginx/sites-available/{{ web_site_name }}"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+    backup: yes
+
+- name: Link nginx enabled sites
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/{{ web_site_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ web_site_name }}"
+    state: link
+  notify: 
+  - Start the Nginx service
