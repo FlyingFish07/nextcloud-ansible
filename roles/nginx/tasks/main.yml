@@ -1,0 +1,76 @@
+---
+- name: Instatll all nextcloud related packages and nginx
+  apt: 
+    name: "{{ item }}"
+    state: present
+  become: yes
+  with_items:
+  - nginx
+  - php7.0-common
+  - php7.0-gd
+  - php7.0-json
+  - php7.0-curl
+  - php7.0-zip
+  - php7.0-xml
+  - php7.0-mbstring
+  - php7.0-cli
+  - php7.0-cgi
+  - php7.0-fpm 
+  - php7.0-mysql
+
+- name: Configure nginx available sites
+  become: yes
+  template:
+    src: nextcloud.example.com.http.j2
+    dest: "/etc/nginx/sites-available/{{ web_site_name }}"
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+    backup: yes
+
+- name: Link nginx enabled sites
+  become: yes
+  file:
+    src: "/etc/nginx/sites-available/{{ web_site_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ web_site_name }}"
+    state: link
+  notify: 
+  - Start the Nginx service
+
+- name: Ensures sites dir exists
+  become: yes
+  file: 
+    path: "{{ home_dir }}/sites"
+    state: directory
+
+- name: Ensures data dir exists
+  become: yes
+  file: 
+    path: "{{ home_dir }}/sites/nextcloud-data"
+    state: directory
+
+- name: change the owner info of NextCloud dir
+  become: yes
+  file:
+    path: "{{ home_dir }}/sites/nextcloud-data"
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory
+
+- name: Set PHP Configuration 
+  become: yes
+  copy:
+    src: "php_config/{{ item }}"
+    dest: "/etc/php/7.0/{{ item }}"
+    mode: 0644
+    backup: yes
+  with_items:
+  - fpm/pool.d/www.conf
+  # - fpm/php-fpm.conf
+  - fpm/php.ini
+  # - cli/php.ini
+  notify: 
+  - Start the PHP 7.0 FPM service
+  - Start the Nginx service
+

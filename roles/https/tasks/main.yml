@@ -1,0 +1,49 @@
+---
+- name: Install software-properties-common 
+  become: yes
+  apt:
+    name: software-properties-common
+    state: present
+
+- name: Add certbot (Let’s Encrypt) ppa
+  become: yes
+  apt_repository:
+    repo: 'ppa:certbot/certbot'
+
+- name: Execute apt-get update
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Install certbot (Let’s Encrypt)
+  become: yes
+  apt:
+    name: certbot
+    state: present
+
+# - name: Generate certificate
+#   become: yes
+#   shell: "certbot certonly --standalone --email {{ ssl_email }} -d {{ web_site_name }}"
+# - name: Automating renewal
+#   # for test
+#   # shell: certbot renew --dry-run
+#   shell: certbot renew 
+
+# - name: Configure nginx available sites
+#   become: yes
+#   template:
+#     src: nextcloud.example.com.http.j2
+#     dest: "/etc/nginx/sites-available/{{ web_site_name }}"
+#     owner: root
+#     group: root
+#     mode: "u=rw,g=r,o=r"
+#     backup: yes
+
+# - name: Link nginx enabled sites
+#   become: yes
+#   file:
+#     src: "/etc/nginx/sites-available/{{ web_site_name }}"
+#     dest: "/etc/nginx/sites-enabled/{{ web_site_name }}"
+#     state: link
+#   notify: 
+#   - Start the Nginx service

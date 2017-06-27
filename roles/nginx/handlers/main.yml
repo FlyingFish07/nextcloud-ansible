@@ -1,0 +1,14 @@
+---
+- name: Start the PHP 7.0 FPM service
+  become: yes
+  service: 
+    name: php7.0-fpm 
+    state: restarted
+    enabled: true
+
+- name: Start the Nginx service
+  become: yes
+  service: 
+    name: nginx 
+    state: restarted
+    enabled: true

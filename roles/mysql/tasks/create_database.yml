@@ -1,0 +1,19 @@
+---
+- name: Create a new database with name 'nextcloud'
+  become: yes
+  mysql_db:
+    name: nextcloud
+    state: present
+    encoding: utf8
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: Create db user and do privilege
+  become: yes
+  mysql_user:
+    name: "{{ nextcloud_db_user }}"
+    password: "{{ nextcloud_db_password }}"
+    priv: 'nextcloud.*:ALL'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"

@@ -1,0 +1,28 @@
+---
+- name: Download nextcloud 12.0.0
+  become: no
+  get_url:
+    url: https://download.nextcloud.com/server/releases/nextcloud-12.0.0.zip
+    dest: "{{ home_dir }}/download/nextcloud-12.0.0.zip"
+    mode: 0440
+    checksum: sha256:6c0a10c44ae9ea8cabc0d20d2aa195ca2e0308429ad7cd4010874d5db99457d7
+- name: Ensures opt dir exists
+  become: yes
+  file: 
+    path: "opt"
+    state: directory
+- name: Unarchive the NextCloud package
+  become: yes
+  unarchive:
+    src: "{{ home_dir }}/download/nextcloud-12.0.0.zip"
+    dest: "/opt"
+    remote_src: yes
+    creates: /opt/nextcloud
+- name: change the owner info of NextCloud dir
+  become: yes
+  file:
+    path: /opt/nextcloud
+    owner: www-data
+    group: www-data
+    recurse: yes
+    state: directory

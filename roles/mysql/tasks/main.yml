@@ -1,0 +1,4 @@
+---
+- include: mysql.yml
+- include: change_root_password.yml
+- include: create_database.yml

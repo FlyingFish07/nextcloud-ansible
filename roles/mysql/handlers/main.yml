@@ -1,0 +1,7 @@
+---
+- name: Start the MySQL service
+  become: yes
+  service: 
+    name: mysql 
+    state: started
+    enabled: true

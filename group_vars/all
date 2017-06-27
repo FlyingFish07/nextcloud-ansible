@@ -1,0 +1,12 @@
+---
+host_name: zyh-web
+web_site_name: nextcloud.example.com
+
+remote_user_name: zyh
+home_dir: /home/zyh
+
+mysql_root_password: mysql123
+nextcloud_db_user: nextcloud
+nextcloud_db_password: mysql
+
+ssl_email: example@test.com
